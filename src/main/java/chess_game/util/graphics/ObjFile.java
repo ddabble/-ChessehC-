@@ -1,125 +1,12 @@
 package chess_game.util.graphics;
 
+import chess_game.util.Util;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
-/*
-class ObjFileParser
-{
-	public static VertexGroup parse_noTextureCoords(File objFile) throws IOException
-	{
-		ArrayList<Vector3f> vertices = new ArrayList<>();
-		ArrayList<Vector3f> vertexNormals = new ArrayList<>();
-		ArrayList<Vector2f> textureCoords = new ArrayList<>();
-		ArrayList<Face> faces = new ArrayList<>();
-		try (BufferedReader reader = new BufferedReader(new FileReader(objFile)))
-		{
-			String line;
-			while ((line = reader.readLine()) != null)
-			{
-				String[] words = line.split(" ");
-				switch (words[0])
-				{
-					case "v":
-						vertices.add(new Vector3f(
-								Float.parseFloat(words[1]),
-								Float.parseFloat(words[2]),
-								Float.parseFloat(words[3])));
-						break;
-
-					case "vn":
-						vertexNormals.add(new Vector3f(
-								Float.parseFloat(words[1]),
-								Float.parseFloat(words[2]),
-								Float.parseFloat(words[3])));
-						break;
-
-					case "vt":
-						textureCoords.add(new Vector2f(
-								Float.parseFloat(words[1]),
-								Float.parseFloat(words[2])));
-						break;
-
-					case "f":
-						Face face = new Face();
-
-						for (int i = 1; i < words.length; i++)
-						{
-							String[] indices = words[i].split("/");
-							face.vertexAttributes[i - 1].vertexIndex = Integer.parseInt(indices[0]) - 1;
-							face.vertexAttributes[i - 1].vertexNormalIndex = Integer.parseInt(indices[2]) - 1;
-
-							if (indices[1].length() > 0)
-								face.vertexAttributes[i - 1].textureCoordIndex = Integer.parseInt(indices[1]) - 1;
-							else
-								face.vertexAttributes[i - 1].textureCoordIndex = -1;
-						}
-
-						faces.add(face);
-						break;
-
-					case "o":
-					case "s":
-					default:
-						break;
-				}
-			}
-		} catch (FileNotFoundException e)
-		{
-			throw new FileNotFoundException("File not found: " + objFile.toString());
-		} catch (IOException e)
-		{
-			throw new IOException("Unable to read file: " + objFile.toString());
-		}
-
-		ArrayList<FullVertex> uniqueVertices = new ArrayList<>();
-		int uniqueVertexIndex = 0;
-
-		for (Face face : faces)
-		{
-			for (Face.VertexAttributes vertexAttributes : face.vertexAttributes)
-			{
-				FullVertex vertex;
-				if (vertexAttributes.textureCoordIndex < 0)
-				{
-					vertex = new FullVertex(
-							vertices.get(vertexAttributes.vertexIndex),
-							vertexNormals.get(vertexAttributes.vertexNormalIndex));
-				} else
-				{
-					vertex = new FullVertex(
-							vertices.get(vertexAttributes.vertexIndex),
-							vertexNormals.get(vertexAttributes.vertexNormalIndex),
-							textureCoords.get(vertexAttributes.textureCoordIndex), includeTextureCoords);
-				}
-
-				int similarVertexIndex = findSimilarVertexIndex(vertex, uniqueVertices);
-				if (similarVertexIndex == -1)
-				{
-					uniqueVertices.add(vertex);
-
-					vertexIndices_out.add(uniqueVertexIndex);
-					uniqueVertexIndex++;
-				} else
-					vertexIndices_out.add(similarVertexIndex);
-			}
-		}
-
-		for (FullVertex fullVertex : uniqueVertices)
-		{
-			for (float vd : fullVertex.getVertexData())
-				vertexData_out.add(vd);
-		}
-	}
-}
-*/
 
 public class ObjFile
 {
@@ -184,19 +71,7 @@ public class ObjFile
 			...
 			 */
 
-			ArrayList<String> fileContents = new ArrayList<>();
-			try (BufferedReader reader = new BufferedReader(new FileReader(new File(pathToObjFile))))
-			{
-				String line;
-				while ((line = reader.readLine()) != null)
-					fileContents.add(line);
-			} catch (FileNotFoundException e)
-			{
-				throw new FileNotFoundException("File not found: " + new File(pathToObjFile).toString());
-			} catch (IOException e)
-			{
-				throw new IOException("Unable to read file: " + new File(pathToObjFile).toString());
-			}
+			ArrayList<String> fileContents = Util.readFile_list(new File(pathToObjFile));
 
 			ArrayList<Vector3f> vertices = new ArrayList<>();
 			ArrayList<Vector2f> textureCoords = new ArrayList<>();

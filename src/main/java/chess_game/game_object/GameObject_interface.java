@@ -1,6 +1,6 @@
-package chess_game.game_objects;
+package chess_game.game_object;
 
-import chess_game.game_objects.graphics.GraphicsObject_interface;
+import chess_game.game_object.graphics.GraphicsObject_interface;
 import org.joml.Vector3f;
 
 public interface GameObject_interface
@@ -10,6 +10,8 @@ public interface GameObject_interface
 	GraphicsObject_interface getGraphics();
 
 	void physicsUpdate(GameObjectManager gameObjectManager);
+
+	void onAttack();
 
 	boolean isDead();
 }

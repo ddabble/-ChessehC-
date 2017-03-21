@@ -1,7 +1,9 @@
-package chess_game.game_objects;
+package chess_game.game_object.objects;
 
-import chess_game.game_objects.graphics.GraphicsObject_interface;
-import chess_game.game_objects.graphics.objects.ChessBoard_graphics;
+import chess_game.game_object.GameObjectManager;
+import chess_game.game_object.GameObject_interface;
+import chess_game.game_object.graphics.GraphicsObject_interface;
+import chess_game.game_object.graphics.objects.ChessBoard_graphics;
 import org.joml.Vector3f;
 
 public class ChessBoard implements GameObject_interface
@@ -38,6 +40,13 @@ public class ChessBoard implements GameObject_interface
 	public void physicsUpdate(GameObjectManager gameObjectManager)
 	{
 
+	}
+
+	@Override
+	public void onAttack()
+	{
+		// TODO:
+		throw new RuntimeException();
 	}
 
 	@Override

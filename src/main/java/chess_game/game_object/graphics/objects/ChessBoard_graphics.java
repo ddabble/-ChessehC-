@@ -1,10 +1,11 @@
-package chess_game.game_objects.graphics.objects;
+package chess_game.game_object.graphics.objects;
 
-import chess_game.game_objects.ThirdPersonCamera;
-import chess_game.game_objects.ChessBoard;
-import chess_game.game_objects.graphics.GraphicsObject_interface;
+import chess_game.game_object.GameObjectManager;
+import chess_game.game_object.ThirdPersonCamera;
+import chess_game.game_object.graphics.GraphicsObject_interface;
+import chess_game.game_object.objects.ChessBoard;
+import chess_game.util.graphics.GLSLshaders;
 import chess_game.util.graphics.ObjFile;
-import chess_game.util.graphics.ShaderProgram;
 import org.joml.Matrix4f;
 import org.lwjgl.stb.STBImage;
 
@@ -21,12 +22,12 @@ public class ChessBoard_graphics implements GraphicsObject_interface
 {
 	private final ChessBoard THIS;
 
-	private ShaderProgram program;
+	private int program;
 
-	private int vao;
-	private int vbo;
-	private int ebo;
-	private int texObj;
+	private int vertexArrayObject;
+	private int vertexBufferObject;
+	private int elementBufferObject;
+	private int textureObject;
 
 	private int[] vertexGroupIndices;
 
@@ -53,15 +54,14 @@ public class ChessBoard_graphics implements GraphicsObject_interface
 		}
 		vertexGroupIndices = objFile.vertexGroupIndices;
 
-		program = new ShaderProgram(ShaderProgram.parseSourceFile("src/main/java/chess_game/shaders/chessBoard.vert"),
-				ShaderProgram.parseSourceFile("src/main/java/chess_game/shaders/chessBoard.frag"), null);
-		program.use();
+		program = GLSLshaders.loadShaders("src/main/java/chess_game/shaders/chessBoard.glsl");
+		glUseProgram(program);
 
-		vao = glGenVertexArrays();
-		glBindVertexArray(vao);
+		vertexArrayObject = glGenVertexArrays();
+		glBindVertexArray(vertexArrayObject);
 
-		vbo = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		vertexBufferObject = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 		glBufferData(GL_ARRAY_BUFFER, objFile.vertexData, GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * 4, 0);
@@ -71,8 +71,8 @@ public class ChessBoard_graphics implements GraphicsObject_interface
 		glVertexAttribPointer(2, 3, GL_FLOAT, false, 8 * 4, 5 * 4);
 		glEnableVertexAttribArray(2);
 
-		ebo = glGenBuffers();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		elementBufferObject = glGenBuffers();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, objFile.vertexIndices, GL_STATIC_DRAW);
 
 //		STBImage.stbi_set_flip_vertically_on_load(true);
@@ -81,8 +81,8 @@ public class ChessBoard_graphics implements GraphicsObject_interface
 		int[] components = new int[1];
 		ByteBuffer imageData = STBImage.stbi_load("src/main/resources/Checkerboard.png", width, height, components, 1);
 
-		texObj = glGenTextures();
-		glBindTexture(GL_TEXTURE_2D, texObj);
+		textureObject = glGenTextures();
+		glBindTexture(GL_TEXTURE_2D, textureObject);
 
 		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width[0], height[0]);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width[0], height[0], GL_RED, GL_UNSIGNED_BYTE, imageData);
@@ -91,9 +91,9 @@ public class ChessBoard_graphics implements GraphicsObject_interface
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-		model_uniformIndex = glGetUniformLocation(program.program, "model");
-		view_uniformIndex = glGetUniformLocation(program.program, "view");
-		projection_uniformIndex = glGetUniformLocation(program.program, "projection");
+		model_uniformIndex = glGetUniformLocation(program, "model");
+		view_uniformIndex = glGetUniformLocation(program, "view");
+		projection_uniformIndex = glGetUniformLocation(program, "projection");
 
 //		modelMatrix.translate(0, 0, 0);
 //		viewMatrix.lookAt(
@@ -109,15 +109,15 @@ public class ChessBoard_graphics implements GraphicsObject_interface
 //		glUniformMatrix4fv(view_uniformIndex, false, viewMatrix.get(new float[16]));
 //		glUniformMatrix4fv(projection_uniformIndex, false, projectionMatrix.get(new float[16]));
 
-		useTexture_uniformIndex = glGetUniformLocation(program.program, "useTexture");
+		useTexture_uniformIndex = glGetUniformLocation(program, "useTexture");
 	}
 
 	@Override
-	public void graphicsUpdate(ThirdPersonCamera camera)
+	public void graphicsUpdate(ThirdPersonCamera camera, GameObjectManager gameObjectManager)
 	{
-		program.use();
-		glBindVertexArray(vao);
-		glBindTexture(GL_TEXTURE_2D, texObj);
+		glUseProgram(program);
+		glBindVertexArray(vertexArrayObject);
+		glBindTexture(GL_TEXTURE_2D, textureObject);
 
 //		Vector3f axis = new Vector3f(-1, 0, 0);
 //		modelMatrix.rotateAround((float)angle, axis.normalize());

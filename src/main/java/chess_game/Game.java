@@ -1,14 +1,20 @@
 package chess_game;
 
-import chess_game.game_objects.GameObjectManager;
+import chess_game.game_object.GameObjectManager;
 import chess_game.util.Util;
 import chess_game.window.Window;
-import org.lwjgl.Version;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.io.IOException;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
 
 // TODO: FIX ALL OF THIS MESSY SPAGHETTI CODE JEEZ
+
+// TODO: Add swords,
+//       a proper intro with the camera starting with a 2D-view from directly above the board, then panning down to the current FPS-view,
+//       LAN instead of/in addition to split-screen,
+//       mouse-controlled camera
 
 public class Game
 {
@@ -16,8 +22,6 @@ public class Game
 
 	void run()
 	{
-		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
-
 		Window.init();
 
 		gameObjectManager = new GameObjectManager();
@@ -36,14 +40,42 @@ public class Game
 	{
 		while (!glfwWindowShouldClose(Window.getGLFWwindow()))
 		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 			gameObjectManager.frameUpdate();
 
 			glfwSwapBuffers(Window.getGLFWwindow());
 
 			glfwPollEvents();
 		}
+	}
+
+	public boolean canUndo()
+	{
+		throw new NotImplementedException();
+	}
+
+	public void undo()
+	{
+		throw new NotImplementedException();
+	}
+
+	public boolean canRedo()
+	{
+		throw new NotImplementedException();
+	}
+
+	public void redo()
+	{
+		throw new NotImplementedException();
+	}
+
+	public void load(String fileName) throws IOException
+	{
+		throw new NotImplementedException();
+	}
+
+	public void save(String fileName) throws IOException
+	{
+		throw new NotImplementedException();
 	}
 
 	public class Physics extends Thread
@@ -55,6 +87,11 @@ public class Game
 
 		double lastPhysicsTime;
 		boolean hasSlept = false;
+
+		public Physics()
+		{
+			super("physics");
+		}
 
 		@Override
 		public void run()

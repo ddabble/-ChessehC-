@@ -1,14 +1,15 @@
 package chess_game.event;
 
 import chess_game.event.types.FramebufferSizeHook_interface;
+import chess_game.event.types.MouseButtonHook_interface;
 import chess_game.window.Window;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
+import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
 
 public class EventHandler
 {
@@ -17,6 +18,7 @@ public class EventHandler
 	public static void registerCallbacks(long glfwWindow)
 	{
 		glfwSetKeyCallback(glfwWindow, Key.instance);
+		glfwSetMouseButtonCallback(glfwWindow, MouseButton.instance);
 		glfwSetFramebufferSizeCallback(glfwWindow, FramebufferSize.instance);
 	}
 
@@ -38,6 +40,32 @@ public class EventHandler
 		}
 	}
 
+	public static class MouseButton extends EventHandler implements GLFWMouseButtonCallbackI
+	{
+		public static final MouseButton instance = new MouseButton();
+
+		private static ArrayList<MouseButtonHook_interface> hooks = new ArrayList<>();
+
+		private MouseButton() {}
+
+		@Override
+		public void invoke(long window, int button, int action, int mods)
+		{
+			for (MouseButtonHook_interface hook : hooks)
+				hook.mouseButtonCallback(button, action);
+		}
+
+		public static void addHook(MouseButtonHook_interface hook)
+		{
+			hooks.add(hook);
+		}
+
+		public static void removeHook(MouseButtonHook_interface hook)
+		{
+			hooks.remove(hook);
+		}
+	}
+
 	public static class FramebufferSize extends EventHandler implements GLFWFramebufferSizeCallbackI
 	{
 		public static final FramebufferSize instance = new FramebufferSize();
@@ -49,8 +77,6 @@ public class EventHandler
 		@Override
 		public void invoke(long window, int newWidth, int newHeight)
 		{
-			glViewport(0, 0, newWidth, newHeight);
-
 			for (FramebufferSizeHook_interface hook : hooks)
 				hook.framebufferSizeCallback(Window.getWidth(), Window.getHeight(), newWidth, newHeight);
 

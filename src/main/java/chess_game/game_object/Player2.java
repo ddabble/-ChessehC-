@@ -1,4 +1,4 @@
-package chess_game.game_objects;
+package chess_game.game_object;
 
 import org.joml.Vector3f;
 

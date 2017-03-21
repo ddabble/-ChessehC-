@@ -1,4 +1,4 @@
-package chess_game.game_objects;
+package chess_game.game_object;
 
 import chess_game.event.EventHandler;
 import chess_game.event.types.FramebufferSizeHook_interface;

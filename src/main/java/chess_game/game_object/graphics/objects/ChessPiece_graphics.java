@@ -1,11 +1,12 @@
-package chess_game.game_objects.graphics.objects;
+package chess_game.game_object.graphics.objects;
 
-import chess_game.game_objects.ChessPiece;
-import chess_game.game_objects.ThirdPersonCamera;
-import chess_game.game_objects.graphics.GraphicsObject_interface;
+import chess_game.game_object.GameObjectManager;
+import chess_game.game_object.ThirdPersonCamera;
+import chess_game.game_object.graphics.GraphicsObject_interface;
+import chess_game.game_object.objects.ChessPiece;
 import chess_game.util.graphics.AnimatedVector;
+import chess_game.util.graphics.GLSLshaders;
 import chess_game.util.graphics.ObjFile;
-import chess_game.util.graphics.ShaderProgram;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -21,11 +22,11 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 {
 	private final ChessPiece THIS;
 
-	private ShaderProgram program;
+	private int program;
 
-	private int vao;
-	private int vbo;
-	private int ebo;
+	private int vertexArrayObject;
+	private int vertexBufferObject;
+	private int elementBufferObject;
 
 	private int numIndices;
 
@@ -62,15 +63,14 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 		}
 		numIndices = objFile.vertexIndices.length;
 
-		program = new ShaderProgram(ShaderProgram.parseSourceFile("src/main/java/chess_game/shaders/chessPiece.vert"),
-				ShaderProgram.parseSourceFile("src/main/java/chess_game/shaders/chessPiece.frag"), null);
-		program.use();
+		program = GLSLshaders.loadShaders("src/main/java/chess_game/shaders/chessPiece.glsl");
+		glUseProgram(program);
 
-		vao = glGenVertexArrays();
-		glBindVertexArray(vao);
+		vertexArrayObject = glGenVertexArrays();
+		glBindVertexArray(vertexArrayObject);
 
-		vbo = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		vertexBufferObject = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 		glBufferData(GL_ARRAY_BUFFER, objFile.vertexData, GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * 4, 0);
@@ -78,17 +78,17 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 		glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * 4, 5 * 4);
 		glEnableVertexAttribArray(1);
 
-		ebo = glGenBuffers();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		elementBufferObject = glGenBuffers();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, objFile.vertexIndices, GL_STATIC_DRAW);
 
-		model_uniformIndex = glGetUniformLocation(program.program, "model");
-		view_uniformIndex = glGetUniformLocation(program.program, "view");
-		projection_uniformIndex = glGetUniformLocation(program.program, "projection");
+		model_uniformIndex = glGetUniformLocation(program, "model");
+		view_uniformIndex = glGetUniformLocation(program, "view");
+		projection_uniformIndex = glGetUniformLocation(program, "projection");
 
 		updateModelMatrix();
 
-		color_uniformIndex = glGetUniformLocation(program.program, "materialDiffuseColor");
+		color_uniformIndex = glGetUniformLocation(program, "materialDiffuseColor");
 		glUniform3f(color_uniformIndex, color.x, color.y, color.z);
 	}
 
@@ -110,10 +110,10 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 	}
 
 	@Override
-	public void graphicsUpdate(ThirdPersonCamera camera)
+	public void graphicsUpdate(ThirdPersonCamera camera, GameObjectManager gameObjectManager)
 	{
-		program.use();
-		glBindVertexArray(vao);
+		glUseProgram(program);
+		glBindVertexArray(vertexArrayObject);
 
 		Vector3f nextPosition = moveAnimation.getNextFrame();
 		if (nextPosition != null)

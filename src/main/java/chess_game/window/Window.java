@@ -38,6 +38,26 @@ public class Window
 		return height;
 	}
 
+	public static float windowToPixelCoord_x(float windowCoord_x)
+	{
+		return (windowCoord_x + 1) / 2 * width;
+	}
+
+	public static float windowToPixelCoord_y(float windowCoord_y)
+	{
+		return (windowCoord_y + 1) / 2 * height;
+	}
+
+	public static float pixelToWindowCoord_x(float pixelCoord_x)
+	{
+		return (pixelCoord_x / width) * 2 - 1;
+	}
+
+	public static float pixelToWindowCoord_y(float pixelCoord_y)
+	{
+		return (pixelCoord_y / height) * 2 - 1;
+	}
+
 	public static void init()
 	{
 		GLFWErrorCallback.createPrint(System.err).set();

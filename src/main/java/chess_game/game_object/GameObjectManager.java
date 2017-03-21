@@ -1,9 +1,12 @@
-package chess_game.game_objects;
+package chess_game.game_object;
 
 import chess_game.event.EventHandler;
-import chess_game.game_objects.graphics.GraphicsObjectManager;
+import chess_game.event.types.MouseButtonHook_interface;
+import chess_game.game_object.graphics.GraphicsObjectManager;
+import chess_game.game_object.objects.ChessBoard;
+import chess_game.game_object.objects.ChessPiece;
+import chess_game.game_object.objects.GUImenu;
 import chess_game.util.Direction_enum;
-import chess_game.util.RelativeDirection_enum;
 import chess_game.window.Window;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -11,10 +14,10 @@ import org.joml.Vector3i;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static chess_game.game_objects.GameObjectManager.ChessPiece_enum.*;
+import static chess_game.game_object.GameObjectManager.ChessPiece_enum.*;
 import static org.lwjgl.glfw.GLFW.*;
 
-public class GameObjectManager
+public class GameObjectManager implements MouseButtonHook_interface
 {
 	private GraphicsObjectManager graphicsObjectManager;
 
@@ -23,10 +26,12 @@ public class GameObjectManager
 
 	private final GameObject_interface[][] pieceGrid = new GameObject_interface[8][8];
 
-	Player player1;
-	Player2 player2;
+	private Player player1;
+	private Player player2;
 
-	private boolean started = false;
+	private boolean AIstarted = false;
+
+	private GameState_enum gameState = GameState_enum.MAIN_MENU;
 
 	public GameObjectManager()
 	{
@@ -37,7 +42,14 @@ public class GameObjectManager
 
 		addPieces();
 
-		graphicsObjectManager = new GraphicsObjectManager(objects, pieces);
+		graphicsObjectManager = new GraphicsObjectManager(this, objects, pieces);
+
+		EventHandler.MouseButton.addHook(this);
+	}
+
+	public GameState_enum getGameState()
+	{
+		return gameState;
 	}
 
 	private void addPieces()
@@ -93,7 +105,6 @@ public class GameObjectManager
 					continue;
 
 				float xCoord = (x - 4) * tileWidth + tileWidth / 2;
-				float yCoord = floorHeight;
 				float zCoord = (z - 4) * tileWidth + tileWidth / 2;
 
 				Vector3f color = (z < pieces.length / 2) ? BLACK : WHITE;
@@ -109,7 +120,7 @@ public class GameObjectManager
 						break;
 
 					case PAWN:
-						piece = new ChessPiece(new Vector3f(xCoord, yCoord, zCoord), color, true);
+						piece = new ChessPiece(new Vector3f(xCoord, floorHeight, zCoord), color, true);
 						break;
 				}
 				if (piece != null)
@@ -149,14 +160,15 @@ public class GameObjectManager
 
 		Vector3f destination = piecePosition.add(distance.x, distance.y, distance.z, new Vector3f());
 
-		return destination.x >= 0 && destination.x <= 7 && destination.z >= 0 && destination.z <= 7
+		return destination.x >= 0 && destination.x <= 7
+				&& destination.z >= 0 && destination.z <= 7
 				&& !isPositionOccupied(destination);
 	}
 
 	/**
 	 * Should check with {@link GameObjectManager#canMove(GameObject_interface, Vector3i)} first.
 	 */
-	public boolean move(GameObject_interface piece, Vector3i distance)
+	public void move(GameObject_interface piece, Vector3i distance)
 	{
 		Vector3f piecePosition = worldPositionToChessBoardPosition(piece.getPosition());
 
@@ -164,12 +176,11 @@ public class GameObjectManager
 
 		pieceGrid[(int)piecePosition.z][(int)piecePosition.x] = null;
 		pieceGrid[(int)destination.z][(int)destination.x] = piece;
-		return true;
 	}
 
 	public boolean attack(GameObject_interface piece, Direction_enum direction)
 	{
-		// TODO: caused by some pieceGrid' positions being the same, somehow
+		// TODO: caused by some pieceGrid-positions being the same, somehow
 		if (direction == null)
 			return false;
 
@@ -180,10 +191,12 @@ public class GameObjectManager
 				|| !isPositionOccupied(attackedPiecePosition))
 			return false;
 
-		GameObject_interface attackedPiece = pieceGrid[(int)attackedPiecePosition.z][(int)attackedPiecePosition.x];
+		int col = (int)attackedPiecePosition.x, row = (int)attackedPiecePosition.z;
+		GameObject_interface attackedPiece = pieceGrid[row][col];
+		attackedPiece.onAttack();
 		if (attackedPiece.isDead())
 		{
-			pieceGrid[(int)attackedPiecePosition.z][(int)attackedPiecePosition.x] = null;
+			pieceGrid[row][col] = null;
 			graphicsObjectManager.removeGraphicsObject(attackedPiece.getGraphics());
 			pieces.remove(attackedPiece);
 
@@ -215,17 +228,48 @@ public class GameObjectManager
 
 	public void frameUpdate()
 	{
-		graphicsObjectManager.graphicsUpdate(player1.getCamera(), RelativeDirection_enum.LEFT);
-
-		graphicsObjectManager.graphicsUpdate(player2.getCamera(), RelativeDirection_enum.RIGHT);
+		graphicsObjectManager.graphicsUpdate(player1.getCamera(), player2.getCamera(), this);
 	}
+
+	private boolean hasReleasedPauseButton = true;
 
 	public void physicsUpdate()
 	{
-		if (!started)
+		if (!AIstarted)
 		{
 			if (EventHandler.Key.keys[GLFW_KEY_ENTER])
+			{
 				assignAITargets();
+				AIstarted = true;
+			}
+		}
+
+		if (!hasReleasedPauseButton && !EventHandler.Key.keys[GLFW_KEY_ESCAPE])
+			hasReleasedPauseButton = true;
+
+		switch (gameState)
+		{
+			case MAIN_MENU:
+				return;
+
+			case PLAYING:
+				if (hasReleasedPauseButton && EventHandler.Key.keys[GLFW_KEY_ESCAPE])
+				{
+					changeGameState(GameState_enum.PAUSED);
+					hasReleasedPauseButton = false;
+					return;
+				}
+				break;
+
+			case PAUSED:
+				if (hasReleasedPauseButton && EventHandler.Key.keys[GLFW_KEY_ESCAPE])
+				{
+					changeGameState(GameState_enum.PLAYING);
+					hasReleasedPauseButton = false;
+				} else
+					return;
+
+				break;
 		}
 
 		// TODO: temporary fix for ConcurrentModificationException
@@ -236,7 +280,52 @@ public class GameObjectManager
 			objects.get(i).physicsUpdate(this);
 	}
 
-	enum ChessPiece_enum
+	@Override
+	public void mouseButtonCallback(int button, int action)
+	{
+		GUImenu.Action_enum gui_action = graphicsObjectManager.getGuiAction(button, action, this);
+		if (gui_action == null)
+			return;
+
+		switch (gui_action)
+		{
+			case NEW_GAME:
+				changeGameState(GameState_enum.PLAYING);
+				break;
+
+			case SAVE_GAME:
+				// TODO: saveGame()
+				break;
+
+			case LOAD_GAME:
+				// TODO: loadGame()
+				changeGameState(GameState_enum.PLAYING);
+				break;
+
+			case MAIN_MENU:
+				// TODO: are you sure you want to quit without saving?
+				changeGameState(GameState_enum.MAIN_MENU);
+				break;
+
+			case RESUME:
+				changeGameState(GameState_enum.PLAYING);
+				break;
+		}
+	}
+
+	private void changeGameState(GameState_enum newGameState)
+	{
+		gameState = newGameState;
+
+		graphicsObjectManager.onChangedGameState(this);
+	}
+
+	public enum GameState_enum
+	{
+		MAIN_MENU, PLAYING, PAUSED
+	}
+
+	public enum ChessPiece_enum
 	{
 		KING, QUEEN, ROOK, BISHOP, KNIGHT, PAWN
 	}

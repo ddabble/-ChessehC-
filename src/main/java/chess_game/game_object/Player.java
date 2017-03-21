@@ -1,8 +1,9 @@
-package chess_game.game_objects;
+package chess_game.game_object;
 
 import chess_game.event.EventHandler;
-import chess_game.game_objects.graphics.GraphicsObject_interface;
-import chess_game.game_objects.graphics.objects.ChessPiece_graphics;
+import chess_game.game_object.graphics.GraphicsObject_interface;
+import chess_game.game_object.graphics.objects.ChessPiece_graphics;
+import chess_game.game_object.objects.ChessPiece;
 import chess_game.util.Direction_enum;
 import chess_game.util.RelativeDirection_enum;
 import org.joml.Vector3f;
@@ -141,10 +142,15 @@ public class Player implements GameObject_interface
 	}
 
 	@Override
-	public boolean isDead()
+	public void onAttack()
 	{
 		((ChessPiece_graphics)model.getGraphics()).onAttack();
+		hitPoints--;
+	}
 
-		return --hitPoints <= 0;
+	@Override
+	public boolean isDead()
+	{
+		return hitPoints <= 0;
 	}
 }

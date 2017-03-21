@@ -1,14 +1,16 @@
-package chess_game.game_objects;
+package chess_game.game_object.objects;
 
-import chess_game.game_objects.graphics.GraphicsObject_interface;
-import chess_game.game_objects.graphics.objects.ChessPiece_graphics;
+import chess_game.game_object.GameObjectManager;
+import chess_game.game_object.GameObject_interface;
+import chess_game.game_object.graphics.GraphicsObject_interface;
+import chess_game.game_object.graphics.objects.ChessPiece_graphics;
 import chess_game.util.Direction_enum;
 import chess_game.util.RelativeDirection_enum;
 import org.joml.Math;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class ChessPiece implements GameObject_interface
 {
@@ -35,6 +37,12 @@ public class ChessPiece implements GameObject_interface
 		this.AI = AI;
 	}
 
+	@Override
+	public GraphicsObject_interface getGraphics()
+	{
+		return graphics;
+	}
+
 	public void setTarget(GameObject_interface target)
 	{
 		if (AI)
@@ -42,24 +50,13 @@ public class ChessPiece implements GameObject_interface
 	}
 
 	@Override
-	public GraphicsObject_interface getGraphics()
-	{
-		return graphics;
-	}
-
-	@Override
 	public void physicsUpdate(GameObjectManager gameObjectManager)
 	{
-		if (!AI)
+		if (!AI || target == null)
 			return;
 
-		if (target == null)
-		{
-			if (lastMoveUpdate > 0 || lastAttackUpdate > 0)
-				gameObjectManager.assignTarget(this);
-			else
-				return;
-		}
+		if (target.isDead())
+			gameObjectManager.assignTarget(this);
 
 		double currentTime = glfwGetTime();
 		if (currentTime - lastAttackUpdate >= UPDATE_COOLDOWN)
@@ -121,10 +118,15 @@ public class ChessPiece implements GameObject_interface
 	}
 
 	@Override
-	public boolean isDead()
+	public void onAttack()
 	{
 		graphics.onAttack();
+		hitPoints--;
+	}
 
-		return --hitPoints <= 0;
+	@Override
+	public boolean isDead()
+	{
+		return hitPoints <= 0;
 	}
 }

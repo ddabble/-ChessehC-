@@ -1,9 +1,8 @@
-package chess_game.game_object.graphics;
+package game_observer.graphics;
 
 import chess_game.event.EventHandler;
 import chess_game.event.types.FramebufferSizeHook_interface;
 import chess_game.game_object.GameObjectManager;
-import chess_game.game_object.GameObject_interface;
 import chess_game.game_object.ThirdPersonCamera;
 import chess_game.game_object.objects.GUImenu;
 import chess_game.util.graphics.GLSLshaders;
@@ -20,9 +19,10 @@ import static org.lwjgl.opengl.GL32.*;
 
 public class GraphicsObjectManager implements FramebufferSizeHook_interface
 {
-	private GameObjectManager gameObjectManager;
-
 	private ArrayList<GraphicsObject_interface> objects;
+
+	private ThirdPersonCamera camera1;
+	private ThirdPersonCamera camera2;
 
 	private int GFXprogram;
 	private int GFXvertexArrayObject;
@@ -35,21 +35,12 @@ public class GraphicsObjectManager implements FramebufferSizeHook_interface
 
 	private GUImenu gui_menu;
 
-	public GraphicsObjectManager(GameObjectManager gameObjectManager, ArrayList<GameObject_interface>... gameObjects)
+	public GraphicsObjectManager(ThirdPersonCamera camera1, ThirdPersonCamera camera2, ArrayList<GraphicsObject_interface> graphicsObjects)
 	{
-		this.gameObjectManager = gameObjectManager;
+		this.camera1 = camera1;
+		this.camera2 = camera2;
 
-		objects = new ArrayList<>();
-
-		for (ArrayList<GameObject_interface> gameObjectList : gameObjects)
-		{
-			for (GameObject_interface gameObject : gameObjectList)
-			{
-				GraphicsObject_interface graphics = gameObject.getGraphics();
-				if (graphics != null)
-					objects.add(graphics);
-			}
-		}
+		objects = graphicsObjects;
 
 		createGFXframebuffer();
 		createGFXframebufferQuad();
@@ -116,7 +107,7 @@ public class GraphicsObjectManager implements FramebufferSizeHook_interface
 		glVertexAttribPointer(1, 2, GL_FLOAT, false, 4 * 4, 2 * 4);
 		glEnableVertexAttribArray(1);
 
-		GFXprogram = GLSLshaders.loadShaders("src/main/java/chess_game/shaders/GFX.glsl");
+		GFXprogram = GLSLshaders.loadShaders("src/main/java/game_observer/graphics/shaders/GFX.glsl");
 		glUseProgram(GFXprogram);
 
 		textureSize_uniformIndex = glGetUniformLocation(GFXprogram, "textureSize");
@@ -126,7 +117,7 @@ public class GraphicsObjectManager implements FramebufferSizeHook_interface
 		glUniform1ui(blur_uniformIndex, 1);
 	}
 
-	public void graphicsUpdate(ThirdPersonCamera camera1, ThirdPersonCamera camera2, GameObjectManager gameObjectManager)
+	public void graphicsUpdate(GameObjectManager gameObjectManager)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindFramebuffer(GL_FRAMEBUFFER, GFXframebufferObject);
@@ -140,7 +131,7 @@ public class GraphicsObjectManager implements FramebufferSizeHook_interface
 		glViewport(Window.getWidth() / 2, 0, Window.getWidth() / 2, Window.getHeight());
 		renderWithCamera(camera2, gameObjectManager);
 
-		renderGFXframebuffer(gameObjectManager);
+		renderGFXframebuffer();
 
 		gui_menu.graphicsUpdate(null, gameObjectManager);
 	}
@@ -157,7 +148,7 @@ public class GraphicsObjectManager implements FramebufferSizeHook_interface
 	private boolean windowResized = false;
 	private GameObjectManager.GameState_enum changedGameState = null;
 
-	private void renderGFXframebuffer(GameObjectManager gameObjectManager)
+	private void renderGFXframebuffer()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, Window.getWidth(), Window.getHeight());

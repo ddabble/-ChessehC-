@@ -1,4 +1,4 @@
-package chess_game.game_object.graphics;
+package game_observer.graphics;
 
 import chess_game.game_object.GameObjectManager;
 import chess_game.game_object.ThirdPersonCamera;

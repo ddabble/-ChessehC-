@@ -33,6 +33,10 @@ public class EventHandler
 		@Override
 		public void invoke(long window, int key, int scancode, int action, int mods)
 		{
+			// Ignore exotic keys
+			if (key < 0 || key >= keys.length)
+				return;
+
 			if (action == GLFW_PRESS)
 				keys[key] = true;
 			else if (action == GLFW_RELEASE)

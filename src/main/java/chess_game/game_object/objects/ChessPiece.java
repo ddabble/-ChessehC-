@@ -107,6 +107,13 @@ public class ChessPiece implements GameObject_interface
 		this.position = position;
 	}
 
+	@Override
+	public boolean isMoving()
+	{
+		// FIXME: Physics shouldn't be dependent on graphics
+		return graphics.isMoving();
+	}
+
 	public void moveTo(Vector3f newPosition)
 	{
 		graphics.startMoveAnimation(newPosition);

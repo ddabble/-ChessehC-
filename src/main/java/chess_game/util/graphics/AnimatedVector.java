@@ -22,6 +22,11 @@ public class AnimatedVector
 		this.duration = duration;
 	}
 
+	public boolean isAnimating()
+	{
+		return isAnimating;
+	}
+
 	public void start()
 	{
 		isAnimating = true;

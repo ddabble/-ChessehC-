@@ -92,6 +92,11 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 		glUniform3f(color_uniformIndex, color.x, color.y, color.z);
 	}
 
+	public boolean isMoving()
+	{
+		return moveAnimation.isAnimating();
+	}
+
 	public void startMoveAnimation(Vector3f newPosition)
 	{
 		moveAnimation = new AnimatedVector().new Linear(THIS.getPosition(), newPosition, 0.1f);

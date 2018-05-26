@@ -43,6 +43,13 @@ public class ChessBoard implements GameObject_interface
 	}
 
 	@Override
+	public boolean isMoving()
+	{
+		// TODO:
+		throw new RuntimeException();
+	}
+
+	@Override
 	public void onAttack()
 	{
 		// TODO:

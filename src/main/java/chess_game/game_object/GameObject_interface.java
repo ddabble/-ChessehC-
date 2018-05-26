@@ -11,6 +11,8 @@ public interface GameObject_interface
 
 	void physicsUpdate(GameObjectManager gameObjectManager);
 
+	boolean isMoving();
+
 	void onAttack();
 
 	boolean isDead();

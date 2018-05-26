@@ -183,6 +183,8 @@ public class GameObjectManager implements MouseButtonHook_interface
 		// TODO: caused by some pieceGrid-positions being the same, somehow
 		if (direction == null)
 			return false;
+		else if (piece.isMoving())
+			return false;
 
 		Vector3f piecePosition = worldPositionToChessBoardPosition(piece.getPosition());
 

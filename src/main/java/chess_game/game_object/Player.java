@@ -70,6 +70,35 @@ public class Player implements GameObject_interface
 		boolean[] keys = EventHandler.Key.keys;
 
 		double currentTime = glfwGetTime();
+		if (currentTime - lastRotationUpdate >= UPDATE_COOLDOWN)
+		{
+			RelativeDirection_enum rotation = null;
+			if (keys[TURN_LEFT_KEY])
+			{
+				rotation = RelativeDirection_enum.LEFT;
+			}
+			if (keys[TURN_RIGHT_KEY])
+			{
+				rotation = RelativeDirection_enum.RIGHT;
+			}
+
+			if (rotation != null)
+			{
+				camera.rotateAround(rotation);
+				lastRotationUpdate = currentTime;
+			}
+		}
+
+		if (currentTime - lastAttackUpdate >= UPDATE_COOLDOWN)
+		{
+			if (keys[ATTACK_KEY])
+			{
+				Vector3f look = camera.getRelativePosition().negate();
+				if (gameObjectManager.attack(this, Direction_enum.getDirection(look)))
+					lastAttackUpdate = currentTime;
+			}
+		}
+
 		if (currentTime - lastMoveUpdate >= UPDATE_COOLDOWN)
 		{
 			boolean updated = false;
@@ -110,35 +139,12 @@ public class Player implements GameObject_interface
 				}
 			}
 		}
+	}
 
-		if (currentTime - lastRotationUpdate >= UPDATE_COOLDOWN)
-		{
-			RelativeDirection_enum rotation = null;
-			if (keys[TURN_LEFT_KEY])
-			{
-				rotation = RelativeDirection_enum.LEFT;
-			}
-			if (keys[TURN_RIGHT_KEY])
-			{
-				rotation = RelativeDirection_enum.RIGHT;
-			}
-
-			if (rotation != null)
-			{
-				camera.rotateAround(rotation);
-				lastRotationUpdate = currentTime;
-			}
-		}
-
-		if (currentTime - lastAttackUpdate >= UPDATE_COOLDOWN)
-		{
-			if (keys[ATTACK_KEY])
-			{
-				Vector3f look = camera.getRelativePosition().negate();
-				if (gameObjectManager.attack(this, Direction_enum.getDirection(look)))
-					lastAttackUpdate = currentTime;
-			}
-		}
+	@Override
+	public boolean isMoving()
+	{
+		return model.isMoving();
 	}
 
 	@Override

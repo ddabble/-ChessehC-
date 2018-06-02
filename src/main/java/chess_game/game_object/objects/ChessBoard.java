@@ -2,14 +2,10 @@ package chess_game.game_object.objects;
 
 import chess_game.game_object.GameObjectManager;
 import chess_game.game_object.GameObject_interface;
-import chess_game.game_object.graphics.GraphicsObject_interface;
-import chess_game.game_object.graphics.objects.ChessBoard_graphics;
 import org.joml.Vector3f;
 
 public class ChessBoard implements GameObject_interface
 {
-	private final ChessBoard_graphics graphics;
-
 	private Vector3f position;
 
 	public static final float SCALE = 8;
@@ -20,14 +16,12 @@ public class ChessBoard implements GameObject_interface
 	public ChessBoard(Vector3f position)
 	{
 		this.position = position;
-
-		graphics = new ChessBoard_graphics(this);
 	}
 
 	@Override
-	public GraphicsObject_interface getGraphics()
+	public Vector3f getColor()
 	{
-		return graphics;
+		return null;
 	}
 
 	@Override

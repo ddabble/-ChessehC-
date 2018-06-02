@@ -2,8 +2,6 @@ package chess_game.game_object.objects;
 
 import chess_game.game_object.GameObjectManager;
 import chess_game.game_object.GameObject_interface;
-import chess_game.game_object.graphics.GraphicsObject_interface;
-import chess_game.game_object.graphics.objects.ChessPiece_graphics;
 import chess_game.util.Direction_enum;
 import chess_game.util.RelativeDirection_enum;
 import org.joml.Math;
@@ -14,7 +12,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class ChessPiece implements GameObject_interface
 {
-	private final ChessPiece_graphics graphics;
+	private Vector3f color;
 
 	private Vector3f position;
 
@@ -31,16 +29,15 @@ public class ChessPiece implements GameObject_interface
 	public ChessPiece(Vector3f position, Vector3f color, boolean AI)
 	{
 		this.position = position;
-
-		graphics = new ChessPiece_graphics(this, color);
+		this.color = color;
 
 		this.AI = AI;
 	}
 
 	@Override
-	public GraphicsObject_interface getGraphics()
+	public Vector3f getColor()
 	{
-		return graphics;
+		return color;
 	}
 
 	public void setTarget(GameObject_interface target)
@@ -88,7 +85,6 @@ public class ChessPiece implements GameObject_interface
 				}
 
 				gameObjectManager.move(this, new Vector3i((int)moveDistance.x, 0, (int)moveDistance.z));
-				move(moveDistance);
 				lastMoveUpdate = currentTime;
 				lastAttackUpdate = currentTime;
 			} else
@@ -114,20 +110,9 @@ public class ChessPiece implements GameObject_interface
 		return graphics.isMoving();
 	}
 
-	public void moveTo(Vector3f newPosition)
-	{
-		graphics.startMoveAnimation(newPosition);
-	}
-
-	public void move(Vector3f distance)
-	{
-		moveTo(position.add(distance, new Vector3f()));
-	}
-
 	@Override
 	public void onAttack()
 	{
-		graphics.onAttack();
 		hitPoints--;
 	}
 

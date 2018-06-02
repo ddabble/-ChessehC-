@@ -1,8 +1,10 @@
 package chess_game;
 
 import chess_game.game_object.GameObjectManager;
+import chess_game.game_object.GameObject_interface;
 import chess_game.util.Util;
-import chess_game.window.Window;
+import game_observer.GenericGridGame;
+import game_observer.GridListener;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
@@ -16,66 +18,98 @@ import static org.lwjgl.glfw.GLFW.*;
 //       LAN instead of/in addition to split-screen,
 //       mouse-controlled camera
 
-public class Game
+public class Game implements GenericGridGame<GameObject_interface>
 {
 	private GameObjectManager gameObjectManager;
 
+	private Physics physicsThread;
+
+	public Game()
+	{
+		physicsThread = new Physics();
+	}
+
+	GameObjectManager getGameObjectManager()
+	{
+		return gameObjectManager;
+	}
+
 	void run()
 	{
-		Window.init();
-
 		gameObjectManager = new GameObjectManager();
 
-		Physics physicsThread = new Physics();
 		physicsThread.start();
-
-		loop();
-
-		physicsThread.keepRunning = false;
-
-		Window.terminate();
 	}
 
-	private void loop()
+	void terminate()
 	{
-		while (!glfwWindowShouldClose(Window.getGLFWwindow()))
-		{
-			gameObjectManager.frameUpdate();
-
-			glfwSwapBuffers(Window.getGLFWwindow());
-
-			glfwPollEvents();
-		}
+		physicsThread.keepRunning = false;
 	}
 
+	@Override
 	public boolean canUndo()
 	{
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public void undo()
 	{
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public boolean canRedo()
 	{
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public void redo()
 	{
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public void load(String fileName) throws IOException
 	{
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public void save(String fileName) throws IOException
 	{
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public int getColumnCount()
+	{
+		return gameObjectManager.getColumnCount();
+	}
+
+	@Override
+	public int getRowCount()
+	{
+		return gameObjectManager.getRowCount();
+	}
+
+	@Override
+	public GameObject_interface getCell(int col, int row)
+	{
+		return gameObjectManager.getPiece(col, row);
+	}
+
+	@Override
+	public void addGridListener(GridListener listener)
+	{
+		gameObjectManager.addGridListener(listener);
+	}
+
+	@Override
+	public void removeGridListener(GridListener listener)
+	{
+		gameObjectManager.removeGridListener(listener);
 	}
 
 	public class Physics extends Thread

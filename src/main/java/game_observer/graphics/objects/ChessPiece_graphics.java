@@ -1,12 +1,12 @@
-package chess_game.game_object.graphics.objects;
+package game_observer.graphics.objects;
 
 import chess_game.game_object.GameObjectManager;
 import chess_game.game_object.ThirdPersonCamera;
-import chess_game.game_object.graphics.GraphicsObject_interface;
 import chess_game.game_object.objects.ChessPiece;
 import chess_game.util.graphics.AnimatedVector;
 import chess_game.util.graphics.GLSLshaders;
 import chess_game.util.graphics.ObjFile;
+import game_observer.graphics.GraphicsObject_interface;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -63,7 +63,7 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 		}
 		numIndices = objFile.vertexIndices.length;
 
-		program = GLSLshaders.loadShaders("src/main/java/chess_game/shaders/chessPiece.glsl");
+		program = GLSLshaders.loadShaders("src/main/java/game_observer/graphics/shaders/chessPiece.glsl");
 		glUseProgram(program);
 
 		vertexArrayObject = glGenVertexArrays();

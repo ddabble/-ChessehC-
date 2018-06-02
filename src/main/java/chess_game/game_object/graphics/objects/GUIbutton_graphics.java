@@ -1,4 +1,4 @@
-package game_observer.graphics.objects;
+package chess_game.game_object.graphics.objects;
 
 import chess_game.game_object.objects.GUIbutton;
 import chess_game.window.Window;

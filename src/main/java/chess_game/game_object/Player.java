@@ -1,6 +1,8 @@
 package chess_game.game_object;
 
 import chess_game.event.EventHandler;
+import chess_game.game_object.graphics.GraphicsObject_interface;
+import chess_game.game_object.graphics.objects.ChessPiece_graphics;
 import chess_game.game_object.objects.ChessPiece;
 import chess_game.util.Direction_enum;
 import chess_game.util.RelativeDirection_enum;
@@ -48,15 +50,10 @@ public class Player implements GameObject_interface
 		return camera;
 	}
 
-	public ChessPiece getModel()
-	{
-		return model;
-	}
-
 	@Override
-	public Vector3f getColor()
+	public GraphicsObject_interface getGraphics()
 	{
-		return model.getColor();
+		return model.getGraphics();
 	}
 
 	@Override
@@ -136,6 +133,7 @@ public class Player implements GameObject_interface
 				if (gameObjectManager.canMove(this, new Vector3i((int)moveDistance.x, 0, (int)moveDistance.z)))
 				{
 					gameObjectManager.move(this, new Vector3i((int)moveDistance.x, 0, (int)moveDistance.z));
+					model.moveTo(model.getPosition().add(moveDistance));
 					camera.move(moveDistance);
 					lastMoveUpdate = currentTime;
 				}
@@ -152,6 +150,7 @@ public class Player implements GameObject_interface
 	@Override
 	public void onAttack()
 	{
+		((ChessPiece_graphics)model.getGraphics()).onAttack();
 		hitPoints--;
 	}
 

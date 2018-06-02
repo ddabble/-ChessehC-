@@ -2,8 +2,8 @@ package chess_game.game_object.objects;
 
 import chess_game.game_object.GameObjectManager;
 import chess_game.game_object.ThirdPersonCamera;
+import chess_game.game_object.graphics.GraphicsObject_interface;
 import chess_game.util.graphics.GLSLshaders;
-import game_observer.graphics.GraphicsObject_interface;
 import org.joml.Vector3f;
 import org.lwjgl.stb.STBImage;
 
@@ -48,7 +48,7 @@ public class GUImenu implements GraphicsObject_interface
 
 	private void initButtonGraphics()
 	{
-		program = GLSLshaders.loadShaders("src/main/java/game_observer/graphics/shaders/button.glsl");
+		program = GLSLshaders.loadShaders("src/main/java/chess_game/shaders/button.glsl");
 		glUseProgram(program);
 
 		background_uniformIndex = glGetUniformLocation(program, "background");

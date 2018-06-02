@@ -2,13 +2,12 @@ package chess_game.game_object;
 
 import chess_game.event.EventHandler;
 import chess_game.event.types.MouseButtonHook_interface;
+import chess_game.game_object.graphics.GraphicsObjectManager;
 import chess_game.game_object.objects.ChessBoard;
 import chess_game.game_object.objects.ChessPiece;
 import chess_game.game_object.objects.GUImenu;
 import chess_game.util.Direction_enum;
 import chess_game.window.Window;
-import game_observer.GameObserver;
-import game_observer.GridListener;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
@@ -20,9 +19,9 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class GameObjectManager implements MouseButtonHook_interface
 {
-	private ArrayList<GridListener> gridListeners;
+	private GraphicsObjectManager graphicsObjectManager;
 
-	private ChessBoard chessBoard;
+	private ArrayList<GameObject_interface> objects;
 	private ArrayList<GameObject_interface> pieces;
 
 	private final GameObject_interface[][] pieceGrid = new GameObject_interface[8][8];
@@ -36,13 +35,14 @@ public class GameObjectManager implements MouseButtonHook_interface
 
 	public GameObjectManager()
 	{
-		gridListeners = new ArrayList<>();
-
-		chessBoard = new ChessBoard(new Vector3f(0, 0, 0));
-
+		objects = new ArrayList<>();
 		pieces = new ArrayList<>();
 
+		objects.add(new ChessBoard(new Vector3f(0, 0, 0)));
+
 		addPieces();
+
+		graphicsObjectManager = new GraphicsObjectManager(this, objects, pieces);
 
 		EventHandler.MouseButton.addHook(this);
 	}
@@ -50,46 +50,6 @@ public class GameObjectManager implements MouseButtonHook_interface
 	public GameState_enum getGameState()
 	{
 		return gameState;
-	}
-
-	public int getRowCount()
-	{
-		return pieceGrid.length;
-	}
-
-	public int getColumnCount()
-	{
-		return pieceGrid[0].length;
-	}
-
-	public GameObject_interface getPiece(int col, int row)
-	{
-		return pieceGrid[row][col];
-	}
-
-	public ChessBoard getChessBoard()
-	{
-		return chessBoard;
-	}
-
-	public Player getPlayer1()
-	{
-		return player1;
-	}
-
-	public Player getPlayer2()
-	{
-		return player2;
-	}
-
-	public void addGridListener(GridListener listener)
-	{
-		gridListeners.add(listener);
-	}
-
-	public void removeGridListener(GridListener listener)
-	{
-		gridListeners.remove(listener);
 	}
 
 	private void addPieces()
@@ -214,15 +174,8 @@ public class GameObjectManager implements MouseButtonHook_interface
 
 		Vector3f destination = piecePosition.add(distance.x, distance.y, distance.z, new Vector3f());
 
-		int originCol = (int)piecePosition.x, originRow = (int)piecePosition.z;
-		int destinationCol = (int)destination.x, destinationRow = (int)destination.z;
-
-		pieceGrid[originRow][originCol] = null;
-		pieceGrid[destinationRow][destinationCol] = piece;
-
-		gridListeners.forEach((GridListener listener) ->
-				listener.pieceMoved(originRow, originCol, destinationRow, destinationCol,
-						piece.getPosition().add(distance.x, distance.y, distance.z, new Vector3f())));
+		pieceGrid[(int)piecePosition.z][(int)piecePosition.x] = null;
+		pieceGrid[(int)destination.z][(int)destination.x] = piece;
 	}
 
 	public boolean attack(GameObject_interface piece, Direction_enum direction)
@@ -243,19 +196,15 @@ public class GameObjectManager implements MouseButtonHook_interface
 		int col = (int)attackedPiecePosition.x, row = (int)attackedPiecePosition.z;
 		GameObject_interface attackedPiece = pieceGrid[row][col];
 		attackedPiece.onAttack();
-		boolean isDead = attackedPiece.isDead();
-		if (isDead)
+		if (attackedPiece.isDead())
 		{
 			pieceGrid[row][col] = null;
+			graphicsObjectManager.removeGraphicsObject(attackedPiece.getGraphics());
 			pieces.remove(attackedPiece);
 
 			if (!(piece instanceof Player))
 				assignTarget(piece);
 		}
-
-		gridListeners.forEach((GridListener listener) ->
-				listener.pieceAttacked(col, row, isDead));
-
 		return true;
 	}
 
@@ -277,6 +226,11 @@ public class GameObjectManager implements MouseButtonHook_interface
 		final float tileWidth = ChessBoard.TILE_WIDTH;
 
 		return new Vector3f((position.x - tileWidth / 2) * tileWidth + 4, 0, (position.z - tileWidth / 2) * tileWidth + 4);
+	}
+
+	public void frameUpdate()
+	{
+		graphicsObjectManager.graphicsUpdate(player1.getCamera(), player2.getCamera(), this);
 	}
 
 	private boolean hasReleasedPauseButton = true;
@@ -324,13 +278,14 @@ public class GameObjectManager implements MouseButtonHook_interface
 		for (int i = 0; i < pieces.size(); i++)
 			pieces.get(i).physicsUpdate(this);
 
-		chessBoard.physicsUpdate(this);
+		for (int i = 0; i < objects.size(); i++)
+			objects.get(i).physicsUpdate(this);
 	}
 
 	@Override
 	public void mouseButtonCallback(int button, int action)
 	{
-		GUImenu.Action_enum gui_action = getGameObserver().getGuiAction(button, action, this);
+		GUImenu.Action_enum gui_action = graphicsObjectManager.getGuiAction(button, action, this);
 		if (gui_action == null)
 			return;
 
@@ -360,22 +315,11 @@ public class GameObjectManager implements MouseButtonHook_interface
 		}
 	}
 
-	private GameObserver getGameObserver()
-	{
-		for (GridListener listener : gridListeners)
-		{
-			if (listener instanceof GameObserver)
-				return (GameObserver)listener;
-		}
-
-		throw new IllegalStateException("No GameObserver..?");
-	}
-
 	private void changeGameState(GameState_enum newGameState)
 	{
 		gameState = newGameState;
 
-		getGameObserver().onChangedGameState(this);
+		graphicsObjectManager.onChangedGameState(this);
 	}
 
 	public enum GameState_enum

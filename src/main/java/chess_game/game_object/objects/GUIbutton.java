@@ -2,8 +2,8 @@ package chess_game.game_object.objects;
 
 import chess_game.event.EventHandler;
 import chess_game.event.types.FramebufferSizeHook_interface;
+import chess_game.game_object.graphics.objects.GUIbutton_graphics;
 import chess_game.window.Window;
-import game_observer.graphics.objects.GUIbutton_graphics;
 
 public abstract class GUIbutton implements FramebufferSizeHook_interface
 {

@@ -58,3 +58,6 @@ Hit `Enter` to make the other chess pieces start moving.
  * `PL;'` on English/American keyboards, `PLØÆ` on Norwegian keyboards, for movement
  * `4`/`5` on keypad to turn left/right
  * Right `Ctrl` to attack
+
+## Screenshots
+<img src="img/Menu.gif" alt="Game menu" width="441px"/> <img src="img/Gameplay.gif" alt="Gameplay" width="441px"/>

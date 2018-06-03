@@ -14,7 +14,8 @@ import static org.lwjgl.glfw.GLFW.*;
 // TODO: Add swords,
 //       a proper intro with the camera starting with a 2D-view from directly above the board, then panning down to the current FPS-view,
 //       LAN instead of/in addition to split-screen,
-//       mouse-controlled camera
+//       mouse-controlled camera,
+//       chess pieces should only attack opposite color
 
 public class Game
 {

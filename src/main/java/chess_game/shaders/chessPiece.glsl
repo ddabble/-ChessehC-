@@ -23,10 +23,10 @@ void main()
 	vertexNormal_cameraspace = normal.xyz;
 
 	vec3 vertexPosition_cameraspace = (view * model * coord).xyz;
-    eyeDirection_cameraspace = vec3(0, 0, 0) - vertexPosition_cameraspace;
+	eyeDirection_cameraspace = vec3(0, 0, 0) - vertexPosition_cameraspace;
 
-    vec3 lightPosition_cameraspace = (view * vec4(lightPosition_worldspace, 1)).xyz;
-    lightDirection_cameraspace = lightPosition_cameraspace + eyeDirection_cameraspace;
+	vec3 lightPosition_cameraspace = (view * vec4(lightPosition_worldspace, 1)).xyz;
+	lightDirection_cameraspace = lightPosition_cameraspace + eyeDirection_cameraspace;
 }
 
 

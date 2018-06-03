@@ -239,7 +239,7 @@ public class GameObjectManager implements MouseButtonHook_interface
 	{
 		if (!AIstarted)
 		{
-			if (EventHandler.Key.keys[GLFW_KEY_ENTER])
+			if (EventHandler.Key.keys[GLFW_KEY_ENTER] || EventHandler.Key.keys[GLFW_KEY_KP_ENTER])
 			{
 				assignAITargets();
 				AIstarted = true;

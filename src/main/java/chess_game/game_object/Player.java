@@ -36,10 +36,15 @@ public class Player implements GameObject_interface
 
 	public Player(Vector3f position, Vector3f color, int windowWidth, int windowHeight)
 	{
+		this(position, color, Direction_enum.NORTH, windowWidth, windowHeight);
+	}
+
+	public Player(Vector3f position, Vector3f color, Direction_enum startLookDirection, int windowWidth, int windowHeight)
+	{
 		model = new ChessPiece(position, color, false);
 
 		camera = new ThirdPersonCamera(new Vector3f(position).add(0, 1, 0),
-				new Vector3f(0, 2, 3),
+				startLookDirection.getVector().mul(3).add(0, 2, 0),
 				windowWidth, windowHeight);
 
 		hitPoints = 10;

@@ -143,7 +143,8 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 		{
 			float progressPercentage = (float)(currentTime - colorChangeStartTime) / COLOR_CHANGE_DURATION;
 
-			currentColor = attackedColor.smoothStep(pieceColor, progressPercentage, new Vector3f());
+			float smoothedPercentage = new Vector3f(0).smoothStep(new Vector3f(1), progressPercentage, new Vector3f()).x;
+			attackedColor.lerp(pieceColor, smoothedPercentage, currentColor);
 		} else
 		{
 			currentColor = new Vector3f(pieceColor);

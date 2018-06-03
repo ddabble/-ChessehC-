@@ -1,3 +1,5 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
 	id 'java'
 	id 'application'
@@ -5,10 +7,21 @@ plugins {
 
 mainClassName = 'chess_game.Main'
 
-def lwjglVersion = '3.1.1'
-def platform = project.hasProperty('platform') ? project.getProperty('platform') : 'windows'
-
 dependencies {
+	def lwjglVersion = '3.1.1'
+	def platform
+
+	def os = OperatingSystem.current()
+	if (os.isWindows())
+		platform = 'windows'
+	else if (os.isLinux())
+		platform = 'linux'
+	else if (os.isMacOsX())
+		platform = 'macos'
+	else
+		throw new GradleException("Unknown operating system '" + os + "'.\nNeeds to be either Windows, Linux or macOS.")
+	println "Platform detected to be '" + platform + "'."
+
 	implementation group: 'org.lwjgl', name: 'lwjgl', version: lwjglVersion
 	implementation group: 'org.lwjgl', name: 'lwjgl-glfw', version: lwjglVersion
 	implementation group: 'org.lwjgl', name: 'lwjgl-opengl', version: lwjglVersion

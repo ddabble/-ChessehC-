@@ -34,14 +34,9 @@ _<br>Also requires graphics drivers supporting **OpenGL 3.3**._
 > gradlew run
 ```
 
-#### Linux
+#### Linux / macOS
 ```bash
-> ./gradlew run -Pplatform=linux
-```
-
-#### Mac
-```bash
-> ./gradlew run -Pplatform=macos
+> ./gradlew run
 ```
 
 ## Controls
@@ -60,4 +55,6 @@ Hit `Enter` to make the other chess pieces start moving.
  * Right `Ctrl` to attack
 
 ## Screenshots
-<img src="img/Menu.gif" alt="Game menu" width="441px"/> <img src="img/Gameplay.gif" alt="Gameplay" width="441px"/>
+![Game menu](img/Menu.gif)
+
+![Gameplay](img/Gameplay.gif)

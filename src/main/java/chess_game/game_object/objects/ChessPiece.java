@@ -74,7 +74,13 @@ public class ChessPiece implements GameObject_interface
 			return;
 
 		if (target.isDead())
-			gameObjectManager.assignTarget(this);
+		{
+			if (!gameObjectManager.assignTarget(this))
+			{
+				target = null;
+				return;
+			}
+		}
 
 		double currentTime = glfwGetTime();
 		if (currentTime - lastAttackUpdate >= UPDATE_COOLDOWN)

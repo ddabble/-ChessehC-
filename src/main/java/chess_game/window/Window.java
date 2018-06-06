@@ -125,7 +125,7 @@ public class Window
 		glfwSetErrorCallback(null).free();
 	}
 
-	public static void framebufferSizeCallback(int newWidth, int newHeight)
+	public static void updateFramebufferSize(int newWidth, int newHeight)
 	{
 		width = newWidth;
 		height = newHeight;

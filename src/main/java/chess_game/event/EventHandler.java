@@ -81,10 +81,10 @@ public class EventHandler
 		@Override
 		public void invoke(long window, int newWidth, int newHeight)
 		{
+			Window.updateFramebufferSize(newWidth, newHeight);
+
 			for (FramebufferSizeHook_interface hook : hooks)
 				hook.framebufferSizeCallback(Window.getWidth(), Window.getHeight(), newWidth, newHeight);
-
-			Window.framebufferSizeCallback(newWidth, newHeight);
 		}
 
 		public static void addHook(FramebufferSizeHook_interface hook)

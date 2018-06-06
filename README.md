@@ -12,6 +12,8 @@ The game was originally my solution to exercise 04 for the 2017 course Object-Or
 >  * Sokoban (Hard)
 >  * Own choice: Choose you own grid based game with similar complexity to the games above
 > 
+> > *I chose the last one* :slightly_smiling_face:
+> 
 > ### Second exercise (07)
 > Extend your game with the following new functionality:
 >  * Undo and redo actions
@@ -24,6 +26,8 @@ The game was originally my solution to exercise 04 for the 2017 course Object-Or
 > Implement the observer pattern in your game:
 >  * Make the GUI listen to changes in the game
 >  * Let your game implement the `GenericGridGame` interface, so that prewritten GUIs may employ your game class
+> 
+> > *I kept this in the experimental branch `expt/observer-pattern`, because I like the idea of each object rendering themselves more.*
 
 ## Run/build instructions
 _Requires having installed **JDK 8+**._

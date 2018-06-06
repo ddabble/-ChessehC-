@@ -48,7 +48,10 @@ public class GUIbutton_graphics
 		int y1 = (int)(Window.windowToPixelCoord_y(yPos) - height[0] / 2.0f - windowCenter_y);
 		int y2 = y1 + height[0];
 
-		out_coords[0] = x1; out_coords[1] = y1; out_coords[2] = x2; out_coords[3] = y2;
+		out_coords[0] = x1;
+		out_coords[1] = y1;
+		out_coords[2] = x2;
+		out_coords[3] = y2;
 
 		index = nextFreeIndex++;
 		updateVertices(x1, y1, x2, y2);

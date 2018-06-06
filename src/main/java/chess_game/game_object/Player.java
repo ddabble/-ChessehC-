@@ -7,15 +7,16 @@ import chess_game.game_object.objects.ChessPiece;
 import chess_game.util.Direction_enum;
 import chess_game.util.RelativeDirection_enum;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector3i;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Player implements GameObject_interface
 {
-	protected ThirdPersonCamera camera;
+	protected final ThirdPersonCamera camera;
 
-	protected ChessPiece model;
+	protected final ChessPiece model;
 
 	protected int hitPoints;
 
@@ -34,12 +35,12 @@ public class Player implements GameObject_interface
 
 	protected int ATTACK_KEY = GLFW_KEY_SPACE;
 
-	public Player(Vector3f position, Vector3f color, int windowWidth, int windowHeight)
+	public Player(Vector3f position, Vector3fc color, int windowWidth, int windowHeight)
 	{
 		this(position, color, Direction_enum.NORTH, windowWidth, windowHeight);
 	}
 
-	public Player(Vector3f position, Vector3f color, Direction_enum startLookDirection, int windowWidth, int windowHeight)
+	public Player(Vector3f position, Vector3fc color, Direction_enum startLookDirection, int windowWidth, int windowHeight)
 	{
 		model = new ChessPiece(position, color, false);
 
@@ -56,15 +57,15 @@ public class Player implements GameObject_interface
 	}
 
 	@Override
-	public GraphicsObject_interface getGraphics()
-	{
-		return model.getGraphics();
-	}
-
-	@Override
 	public Vector3f getPosition()
 	{
 		return model.getPosition();
+	}
+
+	@Override
+	public GraphicsObject_interface getGraphics()
+	{
+		return model.getGraphics();
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import chess_game.util.Direction_enum;
 import chess_game.util.RelativeDirection_enum;
 import org.joml.Math;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector3i;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -28,13 +29,24 @@ public class ChessPiece implements GameObject_interface
 	private boolean stuck = false;
 	private double lastAttackUpdate = 0;
 
-	public ChessPiece(Vector3f position, Vector3f color, boolean AI)
+	public ChessPiece(Vector3f position, Vector3fc color, boolean AI)
 	{
 		this.position = position;
 
 		graphics = new ChessPiece_graphics(this, color);
 
 		this.AI = AI;
+	}
+
+	@Override
+	public Vector3f getPosition()
+	{
+		return new Vector3f(position);
+	}
+
+	public void setPosition(Vector3f position)
+	{
+		this.position = position;
 	}
 
 	@Override
@@ -94,17 +106,6 @@ public class ChessPiece implements GameObject_interface
 			} else
 				stuck = true;
 		}
-	}
-
-	@Override
-	public Vector3f getPosition()
-	{
-		return new Vector3f(position);
-	}
-
-	public void setPosition(Vector3f position)
-	{
-		this.position = position;
 	}
 
 	@Override

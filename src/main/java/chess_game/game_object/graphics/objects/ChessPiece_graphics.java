@@ -9,6 +9,7 @@ import chess_game.util.graphics.GLSLshaders;
 import chess_game.util.graphics.ObjFile;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.io.IOException;
 
@@ -37,19 +38,19 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 	private Matrix4f modelMatrix = new Matrix4f();
 
 	private int color_uniformIndex;
-	private Vector3f pieceColor;
-	private final Vector3f attackedColor = new Vector3f(1.0f, 0.0f, 0.0f);
+	private final Vector3fc pieceColor;
+	private final Vector3fc attackedColor = new Vector3f(1.0f, 0.0f, 0.0f).toImmutable();
 	private Vector3f currentColor;
 	private static final float COLOR_CHANGE_DURATION = 0.2f;
 	private double colorChangeStartTime = -1;
 
 	public AnimatedVector.Linear moveAnimation;
 
-	public ChessPiece_graphics(ChessPiece chessPiece, Vector3f color)
+	public ChessPiece_graphics(ChessPiece chessPiece, Vector3fc color)
 	{
 		THIS = chessPiece;
-		pieceColor = new Vector3f(color);
-		currentColor = color;
+		pieceColor = color;
+		currentColor = new Vector3f(color);
 		moveAnimation = new AnimatedVector().new Linear();
 
 		ObjFile objFile;
@@ -89,7 +90,7 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 		updateModelMatrix();
 
 		color_uniformIndex = glGetUniformLocation(program, "materialDiffuseColor");
-		glUniform3f(color_uniformIndex, color.x, color.y, color.z);
+		glUniform3f(color_uniformIndex, color.x(), color.y(), color.z());
 	}
 
 	public boolean isMoving()

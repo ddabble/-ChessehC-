@@ -6,12 +6,13 @@ import chess_game.util.RelativeDirection_enum;
 import chess_game.util.graphics.AnimatedVector;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class ThirdPersonCamera implements FramebufferSizeHook_interface
 {
 	private Vector3f target;
 	private Vector3f relativeCameraPosition;
-	private final Vector3f up = new Vector3f(0, 1, 0);
+	private final Vector3fc up = new Vector3f(0, 1, 0).toImmutable();
 
 	public Matrix4f viewMatrix;
 	public Matrix4f projectionMatrix;

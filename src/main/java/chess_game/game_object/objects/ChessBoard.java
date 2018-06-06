@@ -25,15 +25,15 @@ public class ChessBoard implements GameObject_interface
 	}
 
 	@Override
-	public GraphicsObject_interface getGraphics()
-	{
-		return graphics;
-	}
-
-	@Override
 	public Vector3f getPosition()
 	{
 		return new Vector3f(position);
+	}
+
+	@Override
+	public GraphicsObject_interface getGraphics()
+	{
+		return graphics;
 	}
 
 	@Override

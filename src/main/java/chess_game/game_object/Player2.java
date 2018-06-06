@@ -2,12 +2,13 @@ package chess_game.game_object;
 
 import chess_game.util.Direction_enum;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Player2 extends Player
 {
-	public Player2(Vector3f position, Vector3f color, int windowWidth, int windowHeight)
+	public Player2(Vector3f position, Vector3fc color, int windowWidth, int windowHeight)
 	{
 		super(position, color, Direction_enum.SOUTH, windowWidth, windowHeight);
 

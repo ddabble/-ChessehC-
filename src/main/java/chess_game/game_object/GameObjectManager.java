@@ -9,6 +9,7 @@ import chess_game.game_object.objects.GUImenu;
 import chess_game.util.Direction_enum;
 import chess_game.window.Window;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector3i;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class GameObjectManager implements MouseButtonHook_interface
 {
+	private static final Vector3fc WHITE = new Vector3f(1, 1, 1).toImmutable();
+	private static final Vector3fc BLACK = new Vector3f(0.05f, 0.05f, 0.05f).toImmutable();
+
 	private GraphicsObjectManager graphicsObjectManager;
 
 	private ArrayList<GameObject_interface> objects;
@@ -56,9 +60,6 @@ public class GameObjectManager implements MouseButtonHook_interface
 	{
 		final float floorHeight = ChessBoard.HEIGHT + 0.001f;
 		final float tileWidth = ChessBoard.TILE_WIDTH;
-
-		final Vector3f WHITE = new Vector3f(1, 1, 1);
-		final Vector3f BLACK = new Vector3f(0.05f, 0.05f, 0.05f);
 
 		final ChessPiece_enum[][] pieces =
 				{
@@ -107,7 +108,7 @@ public class GameObjectManager implements MouseButtonHook_interface
 				float xCoord = (x - 4) * tileWidth + tileWidth / 2;
 				float zCoord = (z - 4) * tileWidth + tileWidth / 2;
 
-				Vector3f color = (z < pieces.length / 2) ? BLACK : WHITE;
+				Vector3fc color = (z < pieces.length / 2) ? BLACK : WHITE;
 
 				ChessPiece piece = null;
 				switch (pieces[z][x])

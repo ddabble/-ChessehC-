@@ -26,7 +26,8 @@ public class GameObjectManager implements MouseButtonHook_interface
 	private GraphicsObjectManager graphicsObjectManager;
 
 	private ArrayList<GameObject_interface> objects;
-	private ArrayList<GameObject_interface> pieces;
+	private ArrayList<GameObject_interface> pieces_white;
+	private ArrayList<GameObject_interface> pieces_black;
 
 	private final GameObject_interface[][] pieceGrid = new GameObject_interface[8][8];
 
@@ -40,13 +41,13 @@ public class GameObjectManager implements MouseButtonHook_interface
 	public GameObjectManager()
 	{
 		objects = new ArrayList<>();
-		pieces = new ArrayList<>();
+		pieces_white = new ArrayList<>();
+		pieces_black = new ArrayList<>();
+		addPieces();
 
 		objects.add(new ChessBoard(new Vector3f(0, 0, 0)));
 
-		addPieces();
-
-		graphicsObjectManager = new GraphicsObjectManager(this, objects, pieces);
+		graphicsObjectManager = new GraphicsObjectManager(this, objects, pieces_white, pieces_black);
 
 		EventHandler.MouseButton.addHook(this);
 	}
@@ -83,7 +84,7 @@ public class GameObjectManager implements MouseButtonHook_interface
 				(player1Position_z - 4) * tileWidth + tileWidth / 2),
 				WHITE,
 				Window.INITIAL_WINDOW_WIDTH / 2, Window.INITIAL_WINDOW_HEIGHT);
-		this.pieces.add(player1);
+		this.pieces_white.add(player1);
 		pieceGrid[player1Position_z][player1Position_x] = player1;
 
 		int player2Position_x = 7;
@@ -95,7 +96,7 @@ public class GameObjectManager implements MouseButtonHook_interface
 				(player2Position_z - 4) * tileWidth + tileWidth / 2),
 				BLACK,
 				Window.INITIAL_WINDOW_WIDTH / 2, Window.INITIAL_WINDOW_HEIGHT);
-		this.pieces.add(player2);
+		this.pieces_black.add(player2);
 		pieceGrid[player2Position_z][player2Position_x] = player2;
 
 		for (int z = 0; z < pieces.length; z++)
@@ -125,7 +126,12 @@ public class GameObjectManager implements MouseButtonHook_interface
 						break;
 				}
 				if (piece != null)
-					this.pieces.add(piece);
+				{
+					if (color == WHITE)
+						this.pieces_white.add(piece);
+					else
+						this.pieces_black.add(piece);
+				}
 				pieceGrid[z][x] = piece;
 			}
 		}
@@ -133,31 +139,38 @@ public class GameObjectManager implements MouseButtonHook_interface
 
 	private void assignAITargets()
 	{
-		for (GameObject_interface object : pieces)
-		{
-			if (object instanceof ChessPiece)
-				assignTarget(object);
-		}
+		for (GameObject_interface piece : pieces_white)
+			assignTarget(piece);
+
+		for (GameObject_interface piece : pieces_black)
+			assignTarget(piece);
 	}
 
-	public void assignTarget(GameObject_interface object)
+	public boolean assignTarget(GameObject_interface object)
 	{
+		if (!(object instanceof ChessPiece))
+			return false;
+
 		Random rand = new Random();
+		ArrayList<GameObject_interface> opponentPieces;
+		if (object.getColor() == WHITE)
+			opponentPieces = pieces_black;
+		else if (object.getColor() == BLACK)
+			opponentPieces = pieces_white;
+		else
+			throw new IllegalStateException("Piece has neither white nor black color!");
 
-		if (pieces.size() < 2)
-			return;
+		if (opponentPieces.size() == 0)
+			return false;
 
-		int targetIndex = rand.nextInt(pieces.size());
-		GameObject_interface target = pieces.get(targetIndex);
-		if (target == object)
-			target = pieces.get((targetIndex + 1) % pieces.size());
-
-		((ChessPiece)object).setTarget(target);
+		int targetIndex = rand.nextInt(opponentPieces.size());
+		((ChessPiece)object).setTarget(opponentPieces.get(targetIndex));
+		return true;
 	}
 
-	public boolean canMove(GameObject_interface piece, Vector3i distance)
+	public boolean canMove(GameObject_interface object, Vector3i distance)
 	{
-		Vector3f piecePosition = worldPositionToChessBoardPosition(piece.getPosition());
+		Vector3f piecePosition = worldPositionToChessBoardPosition(object.getPosition());
 
 		Vector3f destination = piecePosition.add(distance.x, distance.y, distance.z, new Vector3f());
 
@@ -169,25 +182,25 @@ public class GameObjectManager implements MouseButtonHook_interface
 	/**
 	 * Should check with {@link GameObjectManager#canMove(GameObject_interface, Vector3i)} first.
 	 */
-	public void move(GameObject_interface piece, Vector3i distance)
+	public void move(GameObject_interface object, Vector3i distance)
 	{
-		Vector3f piecePosition = worldPositionToChessBoardPosition(piece.getPosition());
+		Vector3f piecePosition = worldPositionToChessBoardPosition(object.getPosition());
 
 		Vector3f destination = piecePosition.add(distance.x, distance.y, distance.z, new Vector3f());
 
 		pieceGrid[(int)piecePosition.z][(int)piecePosition.x] = null;
-		pieceGrid[(int)destination.z][(int)destination.x] = piece;
+		pieceGrid[(int)destination.z][(int)destination.x] = object;
 	}
 
-	public boolean attack(GameObject_interface piece, Direction_enum direction)
+	public boolean attack(GameObject_interface object, Direction_enum direction)
 	{
 		// TODO: caused by some pieceGrid-positions being the same, somehow
 		if (direction == null)
 			return false;
-		else if (piece.isMoving())
+		else if (object.isMoving())
 			return false;
 
-		Vector3f piecePosition = worldPositionToChessBoardPosition(piece.getPosition());
+		Vector3f piecePosition = worldPositionToChessBoardPosition(object.getPosition());
 
 		Vector3f attackedPiecePosition = piecePosition.add(direction.getVector(), new Vector3f());
 		if (attackedPiecePosition.x < 0 || attackedPiecePosition.x > 7 || attackedPiecePosition.z < 0 || attackedPiecePosition.z > 7
@@ -201,10 +214,15 @@ public class GameObjectManager implements MouseButtonHook_interface
 		{
 			pieceGrid[row][col] = null;
 			graphicsObjectManager.removeGraphicsObject(attackedPiece.getGraphics());
-			pieces.remove(attackedPiece);
 
-			if (!(piece instanceof Player))
-				assignTarget(piece);
+			if (attackedPiece.getColor() == WHITE)
+				pieces_white.remove(attackedPiece);
+			else if (attackedPiece.getColor() == BLACK)
+				pieces_black.remove(attackedPiece);
+			else
+				throw new IllegalStateException("Attacked piece has neither white nor black color!");
+
+			assignTarget(object);
 		}
 		return true;
 	}
@@ -276,8 +294,10 @@ public class GameObjectManager implements MouseButtonHook_interface
 		}
 
 		// TODO: temporary fix for ConcurrentModificationException
-		for (int i = 0; i < pieces.size(); i++)
-			pieces.get(i).physicsUpdate(this);
+		for (int i = 0; i < pieces_white.size(); i++)
+			pieces_white.get(i).physicsUpdate(this);
+		for (int i = 0; i < pieces_black.size(); i++)
+			pieces_black.get(i).physicsUpdate(this);
 
 		for (int i = 0; i < objects.size(); i++)
 			objects.get(i).physicsUpdate(this);

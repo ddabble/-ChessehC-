@@ -50,6 +50,12 @@ public class ChessPiece implements GameObject_interface
 	}
 
 	@Override
+	public Vector3fc getColor()
+	{
+		return graphics.getPieceColor();
+	}
+
+	@Override
 	public GraphicsObject_interface getGraphics()
 	{
 		return graphics;

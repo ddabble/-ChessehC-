@@ -5,6 +5,7 @@ import chess_game.game_object.GameObject_interface;
 import chess_game.game_object.graphics.GraphicsObject_interface;
 import chess_game.game_object.graphics.objects.ChessBoard_graphics;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class ChessBoard implements GameObject_interface
 {
@@ -28,6 +29,13 @@ public class ChessBoard implements GameObject_interface
 	public Vector3f getPosition()
 	{
 		return new Vector3f(position);
+	}
+
+	@Override
+	public Vector3fc getColor()
+	{
+		// TODO:
+		throw new RuntimeException();
 	}
 
 	@Override

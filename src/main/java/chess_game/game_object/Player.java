@@ -63,6 +63,12 @@ public class Player implements GameObject_interface
 	}
 
 	@Override
+	public Vector3fc getColor()
+	{
+		return model.getColor();
+	}
+
+	@Override
 	public GraphicsObject_interface getGraphics()
 	{
 		return model.getGraphics();

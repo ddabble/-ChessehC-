@@ -93,6 +93,11 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 		glUniform3f(color_uniformIndex, color.x(), color.y(), color.z());
 	}
 
+	public Vector3fc getPieceColor()
+	{
+		return pieceColor;
+	}
+
 	public boolean isMoving()
 	{
 		return moveAnimation.isAnimating();

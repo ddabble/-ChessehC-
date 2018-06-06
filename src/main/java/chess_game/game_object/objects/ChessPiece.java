@@ -11,6 +11,8 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.joml.Vector3i;
 
+import java.util.Random;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class ChessPiece implements GameObject_interface
@@ -102,22 +104,56 @@ public class ChessPiece implements GameObject_interface
 			Vector3f targetDistance = target.getPosition().sub(this.position, new Vector3f());
 			Vector3f moveDistance = RelativeDirection_enum.getNormalizedDominantDirection(targetDistance);
 
-			if (gameObjectManager.canMove(this, new Vector3i((int)moveDistance.x, 0, (int)moveDistance.z)))
+			if (!tryMoving(moveDistance, currentTime, gameObjectManager))
 			{
-				if (stuck)
+				if (!stuck)
 				{
-					lastMoveUpdate = currentTime;
-					stuck = false;
+					lastMoveUpdate = currentTime + UPDATE_COOLDOWN; // Double the update cooldown when stuck
+					stuck = true;
 					return;
 				}
 
-				gameObjectManager.move(this, new Vector3i((int)moveDistance.x, 0, (int)moveDistance.z));
-				move(moveDistance);
-				lastMoveUpdate = currentTime;
-				lastAttackUpdate = currentTime;
-			} else
-				stuck = true;
+				if (!tryMovingInRandomDirection(moveDistance, currentTime, gameObjectManager))
+					lastMoveUpdate = currentTime + UPDATE_COOLDOWN; // Double the update cooldown when stuck
+			}
 		}
+	}
+
+	private boolean tryMoving(Vector3f distance, double currentTime, GameObjectManager gameObjectManager)
+	{
+		if (gameObjectManager.canMove(this, new Vector3i((int)distance.x, 0, (int)distance.z)))
+		{
+			if (stuck)
+				stuck = false;
+
+			gameObjectManager.move(this, new Vector3i((int)distance.x, 0, (int)distance.z));
+			move(distance);
+			lastMoveUpdate = currentTime;
+			lastAttackUpdate = currentTime;
+			return true;
+		} else
+			return false;
+	}
+
+	private boolean tryMovingInRandomDirection(Vector3f distance, double currentTime, GameObjectManager gameObjectManager)
+	{
+		RelativeDirection_enum randomDirection = RelativeDirection_enum.FORWARD;
+		switch (new Random().nextInt(3))
+		{
+			case 0:
+				randomDirection = RelativeDirection_enum.LEFT;
+				break;
+
+			case 1:
+				randomDirection = RelativeDirection_enum.RIGHT;
+				break;
+
+			case 2:
+				randomDirection = RelativeDirection_enum.BACKWARD;
+				break;
+		}
+		distance = RelativeDirection_enum.rotate(distance, randomDirection);
+		return tryMoving(distance, currentTime, gameObjectManager);
 	}
 
 	@Override

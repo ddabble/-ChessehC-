@@ -58,7 +58,7 @@ public class ChessBoard implements GameObject_interface
 	}
 
 	@Override
-	public void onAttack()
+	public boolean onAttack()
 	{
 		// TODO:
 		throw new RuntimeException();

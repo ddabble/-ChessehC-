@@ -16,7 +16,7 @@ public interface GameObject_interface
 
 	boolean isMoving();
 
-	void onAttack();
+	boolean onAttack();
 
 	boolean isDead();
 }

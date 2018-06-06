@@ -132,10 +132,14 @@ public class ChessPiece implements GameObject_interface
 	}
 
 	@Override
-	public void onAttack()
+	public boolean onAttack()
 	{
+		if (graphics.isInvulnerable())
+			return false;
+
 		graphics.onAttack();
 		hitPoints--;
+		return true;
 	}
 
 	@Override

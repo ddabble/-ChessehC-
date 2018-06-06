@@ -103,6 +103,11 @@ public class ChessPiece_graphics implements GraphicsObject_interface
 		return moveAnimation.isAnimating();
 	}
 
+	public boolean isInvulnerable()
+	{
+		return colorChangeStartTime > 0;
+	}
+
 	public void startMoveAnimation(Vector3f newPosition)
 	{
 		moveAnimation = new AnimatedVector().new Linear(THIS.getPosition(), newPosition, 0.1f);

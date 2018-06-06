@@ -160,10 +160,14 @@ public class Player implements GameObject_interface
 	}
 
 	@Override
-	public void onAttack()
+	public boolean onAttack()
 	{
-		((ChessPiece_graphics)model.getGraphics()).onAttack();
+		if (((ChessPiece_graphics)getGraphics()).isInvulnerable())
+			return false;
+
+		((ChessPiece_graphics)getGraphics()).onAttack();
 		hitPoints--;
+		return true;
 	}
 
 	@Override

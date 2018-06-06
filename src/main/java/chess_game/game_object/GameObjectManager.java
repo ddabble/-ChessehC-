@@ -209,7 +209,8 @@ public class GameObjectManager implements MouseButtonHook_interface
 
 		int col = (int)attackedPiecePosition.x, row = (int)attackedPiecePosition.z;
 		GameObject_interface attackedPiece = pieceGrid[row][col];
-		attackedPiece.onAttack();
+		if (!attackedPiece.onAttack())
+			return false;
 		if (attackedPiece.isDead())
 		{
 			pieceGrid[row][col] = null;

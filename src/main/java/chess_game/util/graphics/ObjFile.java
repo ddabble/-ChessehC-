@@ -44,29 +44,29 @@ public class ObjFile
 			/*
 			...
 			f 2/2/1 1/1/1 4/4/1
-			o SketchUp.001_ID11				<- End of the last vertex group and start of the next one [index 2]
+			o SketchUp.001_ID11             <- End of the last vertex group and start of the next one [index 2]
 
-			v -0.500000 0.050000 -0.500000	<- Vertex										[index 5]
+			v -0.500000 0.050000 -0.500000  <- Vertex                                       [index 5]
 			v -0.500000 0.000000 0.500000
 			v -0.500000 0.050000 0.500000
 			v -0.500000 0.000000 -0.500000
-			vt -1.6404 0.1640				<- Texture coordinate							[index 5]
+			vt -1.6404 0.1640               <- Texture coordinate                           [index 5]
 			vt 1.6404 0.0000
 			vt 1.6404 0.1640
 			vt -1.6404 0.0000
-			vn -1.0000 0.0000 0.0000		<- Vertex (face) normal							[index 2]
+			vn -1.0000 0.0000 0.0000        <- Vertex (face) normal                         [index 2]
 			s off
 
-			f 5/5/2 6/6/2 7/7/2				<- Face, composited of three references to full vertices
-			f 6/6/2 5/5/2 8/8/2				   This is a reference to a full vertex:		5/5/2
-											   and this is the full vertex it references:	-0.500000 0.050000 -0.500000 / -1.6404 0.1640 / -1.0000 0.0000 0.0000
-											   Full vertex indices:
-												 [index 7]   [index 8]   [index 9]
-											   f   5/5/2       6/6/2       7/7/2
-											   f   6/6/2       5/5/2       8/8/2
-												 [index 10]  [index 11]  [index 12]
+			f 5/5/2 6/6/2 7/7/2             <- Face, composited of three references to full vertices
+			f 6/6/2 5/5/2 8/8/2                This is a reference to a full vertex:        5/5/2
+			                                   and this is the full vertex it references:   -0.500000 0.050000 -0.500000 / -1.6404 0.1640 / -1.0000 0.0000 0.0000
+			                                   Full vertex indices:
+			                                     [index 7]   [index 8]   [index 9]
+			                                   f   5/5/2       6/6/2       7/7/2
+			                                   f   6/6/2       5/5/2       8/8/2
+			                                     [index 10]  [index 11]  [index 12]
 
-			o SketchUp_ID3					<- End of the last vertex group and start of the next one [index 3]
+			o SketchUp_ID3                  <- End of the last vertex group and start of the next one [index 3]
 			v 0.500000 0.000000 -0.500000
 			...
 			 */

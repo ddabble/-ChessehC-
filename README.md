@@ -1,6 +1,6 @@
 # !ChessehC!
 
-!ChessehC! (sounds fun if pronounced *chess-itch*) is an (unfinished) real-time version of chess, created from scratch with its own 3D graphics engine.
+!ChessehC! (sounds fun if pronounced *chess-itch*) is an (unfinished) chess spin-off where all the pieces move simultaneously in real-time. It's created from scratch with its own 3D graphics engine.
 
 The game was originally my solution to exercise 04 for the 2017 course Object-Oriented Programming (TDT4100) at NTNU, with extensions to the functionality in exercise 07 and 10. The exercises are reproduced and translated from Norwegian below:
 > ### First exercise (04)
